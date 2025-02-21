@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Realtime Database</title>
+</head>
+<body>
+    <a href="mainboard.html"><h1>MAIN BOARD</h1></a>
+    <a href="strands.html"><h1>STRANDS</h1></a>
+    <input type="text" placeholder="Type your post here..." id="post" />
+    <button id="submit">POST</button>
+
+    <h3>Posts:</h3>
+    <div id="posts-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        // Your Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyCn1L0yFbr6auIt4mia__YrQL1Gr1YRUkc",
+            authDomain: "online-bulletin-board-44e6f.firebaseapp.com",
+            databaseURL: "https://online-bulletin-board-44e6f-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "online-bulletin-board-44e6f",
+            storageBucket: "online-bulletin-board-44e6f.firebasestorage.app",
+            messagingSenderId: "88789255529",
+            appId: "1:88789255529:web:2e09146a4bffcc0c34e9f8",
+            measurementId: "G-B76ZNNJ1H0"
+        };
+
+        // Initialize Firebase
+        var app = initializeApp(firebaseConfig);
+        var db = getDatabase(app);
+
+        // Save data to Firebase
+        document.getElementById("submit").addEventListener('click', function(e) {
+            var postContent = document.getElementById("post").value.trim();
+
+            if (!postContent) {
+                alert("Please type a valid post!");
+                return;
+            }
+
+            // Save post to the "posts" path using push (to avoid overwriting)
+            var postsRef = ref(db, 'posts/'); // Ref to the 'posts' path
+            push(postsRef, {
+                post: postContent
+            })
+            .then(() => {
+                alert("Saved successfully!");
+                document.getElementById("post").value = ""; // Clear input field
+            })
+            .catch((error) => {
+                alert("Error saving post: " + error.message);
+            });
+        });
+
+        // Display data
+        var postsContainer = document.getElementById("posts-container");
+        var postsRef = ref(db, 'posts/');  // Accessing the "posts" path
+
+        // Automatically listen for data changes
+        onValue(postsRef, (snapshot) => {
+            postsContainer.innerHTML = ""; // Clear existing posts
+            if (snapshot.exists()) {
+                var posts = snapshot.val();
+                Object.keys(posts).forEach((key) => {
+                    var post = posts[key].post;
+
+                    // Create a new div for each post
+                    var postDiv = document.createElement("div");
+                    postDiv.textContent = post;
+                    postsContainer.appendChild(postDiv);
+                });
+            } else {
+                postsContainer.textContent = "No posts yet.";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="https://www.ucc-cavite.edu.ph/images/Secondary-Logo-2.png">
+      <ul>
+        <li class="homeBtns"><a href="mainboard.html" class="homelinks">Main Board</a></li>
+        <li class="homeBtns"><a href="strands.html" class="homelinks">Strands/Sections</a></li>
+      </ul>
+      </div>
+<p></p>
+<button onclick="show();" id="upload">Upload</button>
+<div id="uploadDiv">
+    <button id="hide" onclick="hide()">✖</button>
+    <p>Upload your post here</p>
+    <input type="text" placeholder="Type your post here..." id="humssPost" class="postclass" />
+    <button id="humssSubmit" class="classSubmit" onclick="hide();">Upload</button>
+</div>
+
+
+<div id="posts-container">
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, child, get, set, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    // Your Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyCn1L0yFbr6auIt4mia__YrQL1Gr1YRUkc",
+        authDomain: "online-bulletin-board-44e6f.firebaseapp.com",
+        databaseURL: "https://online-bulletin-board-44e6f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "online-bulletin-board-44e6f",
+        storageBucket: "online-bulletin-board-44e6f.firebasestorage.app",
+        messagingSenderId: "88789255529",
+        appId: "1:88789255529:web:2e09146a4bffcc0c34e9f8",
+        measurementId: "G-B76ZNNJ1H0"
+    };
+
+    // Initialize Firebase
+    var app = initializeApp(firebaseConfig);
+    var db = getDatabase(app);
+
+    // Save data to Firebase
+    document.getElementById("humssSubmit").addEventListener('click', function(e) {
+        var postContent = document.getElementById("humssPost").value.trim();
+
+        if (!postContent) {
+            alert("Please type a valid post!");
+            return;
+        }
+
+        // Save post to the "posts" path using push (to avoid overwriting)
+        var postsRef = ref(db, 'postsHUMSS/'); // Ref to the 'posts' path
+        push(postsRef, {
+            post: postContent
+        })
+        .then(() => {
+            document.getElementById("humssPost").value = ""; // Clear input field
+        })
+    });
+
+    
+
+    // Display data
+    var postsContainer = document.getElementById("posts-container");
+    var postsRef = ref(db, 'postsHUMSS/');  // Accessing the "posts" path
+
+    // Automatically listen for data changes
+    onValue(postsRef, (snapshot) => {
+postsContainer.innerHTML = ""; // Clear previous posts to avoid duplicates
+snapshot.forEach((childSnapshot) => {
+    var postData = childSnapshot.val();
+
+    // Create a new div for each post
+    var postDiv = document.createElement("div");
+    postDiv.classList.add("post");
+
+    // Create a paragraph for the post text
+    var postText = document.createElement("p");
+    postText.classList.add("post-text");
+    postText.textContent = postData.post; // Text content from Firebase
+
+    // Append the paragraph to the post div
+    postDiv.appendChild(postText);
+
+    // Append the post div to the container
+    postsContainer.appendChild(postDiv);
+});
+});
+
+
+</script>
+</div>
+</body>
+</html>

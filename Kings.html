@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="testDiv.css">
+    <script src="script.js"></script>
+</head>
+<body class="notBoards">
+    <img src="https://www.ucc-cavite.edu.ph/images/Secondary-Logo-2.png" class="logoFixed">
+    <div class="header">
+        <a href="https://www.ucc-cavite.edu.ph/index.html"><img src="https://www.ucc-cavite.edu.ph/images/Secondary-Logo-2.png"></a>
+        <ul class="ulbuttons">
+            <div style="padding: 20px;"><li class="homeBtns"><a href="home.html" class="homelinks">Home</a></li></div>
+          <div style="padding: 20px;"><li class="homeBtns"><a href="mainboard.html" class="homelinks">Main Board</a></li></div>
+          <button onclick="strandShow();" style="background-color: #97862a; font-family: Arial, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: .25px; "><div class="strandsSections"><li class="homeBtns">Strands/Sections</li></div></a></button>
+        </ul>
+        </div>
+        <div id="sections2container">
+            <button onclick="strandHide();">✕</button>
+            
+            <a href="stem.html"><div class="buttoncolor"><p><u>STEM</u></p></div></a>
+            <a href="humss.html"><div class="buttoncolor"><p><u>HUMSS</u></p></div></a>
+            <a href="abm.html"><div class="buttoncolor"><p><u>ABM</u></p></div></a>
+            <a href="P.A.html"><div class="buttoncolor"><p><u>P.A</u></p></div></a>
+            <a href="T.V.L.html"><div class="buttoncolor"><p><u>TVL</u></p></div></a>
+            
+          </div>
+          <div class="sectionsTitle"><h1 style=" text-decoration: underline; text-align: center; position: relative; top: 30%; transform: translateY(-50%); font-weight: 700; font-family: Arial, sans-serif;">Kings</h1></div>
+    <button onclick="show();" id="upload">Upload</button>
+    <div id="uploadDiv">
+        <button id="hide" onclick="hide()">✖</button>
+        <p class="instructions">Upload your post here</p>
+        <input type="text" placeholder="Write a short title for your post..." id="kingsTitlePost" class="postTitle"/>
+        <input type="text" placeholder="Write your post here..." id="kingspost" class="postclass" />
+        <button id="kingssubmit" onclick="hide();" class="submit">Upload</button>
+    </div>
+
+
+    <div id="posts-container">
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+            import { getDatabase, ref, push, onValue, child, get, set, update, remove } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-database.js";
+    
+            var firebaseConfig = {
+                apiKey: "AIzaSyCdWQFO-wUpvot5TSxEd2KoI4b817HcGzw",
+                authDomain: "boardtest-6d9cb.firebaseapp.com",
+                databaseURL: "https://boardtest-6d9cb-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "boardtest-6d9cb",
+                storageBucket: "boardtest-6d9cb.firebasestorage.app",
+                messagingSenderId: "113697012359",
+                appId: "1:113697012359:web:b6895e6f067f654dd31622",
+                measurementId: "G-JZN1P0VMCZ"
+            };
+
+        var app = initializeApp(firebaseConfig);
+        var db = getDatabase(app);
+
+        document.getElementById("kingssubmit").addEventListener('click', function(e) {
+    var postTitle = document.getElementById("kingsTitlePost").value.trim();
+    var postContent = document.getElementById("kingspost").value.trim();
+    
+    if (postTitle === "" || postContent === "") {
+        alert("Both title and content are required!");
+        return;
+    }
+
+    var postsRef = ref(db, 'kingsPOST/'); 
+
+    push(postsRef, {
+        title: postTitle,
+        content: postContent
+    })
+    .then(() => {
+        document.getElementById("kingsTitlePost").value = ""; 
+        document.getElementById("kingspost").value = ""; 
+        alert("Post saved successfully!");
+    })
+});
+
+var postsContainer = document.getElementById("posts-container");
+var postsRef = ref(db, 'kingsPOST/'); 
+
+onValue(postsRef, (snapshot) => {
+    postsContainer.innerHTML = ""; 
+
+    snapshot.forEach((childSnapshot) => {
+        var postKey = childSnapshot.key; 
+        var postData = childSnapshot.val(); 
+       
+        var postDiv = document.createElement("div");
+        postDiv.classList.add("post");
+
+        var titleContent = document.createElement("h2");
+        titleContent.classList.add("titleContent");
+        titleContent.textContent = postData.title;
+
+        
+        var postText = document.createElement("p");
+        postText.classList.add("post-text");
+        postText.textContent = postData.content;
+
+        
+        var deleteButton = document.createElement('button');
+        deleteButton.classList.add('delete-btn');
+        deleteButton.textContent = 'Delete';
+
+        
+        postDiv.appendChild(titleContent);
+        postDiv.appendChild(postText);
+        postDiv.appendChild(deleteButton);
+
+        deleteButton.addEventListener("click", () => {
+            deletePost(postKey);
+        });
+
+        
+        postsContainer.appendChild(postDiv);
+    });
+});
+
+
+function deletePost(postKey) {
+    var postRef = ref(db, 'kingsPOST/' + postKey); 
+    remove(postRef)
+}
+
+
+    </script>
+    </div>
+    <!--<footer class="footer"><p>asdas</p></footer>-->
+</body>
+</html>
